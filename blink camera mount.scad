@@ -1,16 +1,18 @@
 width = 26;
 length = 85;
 end_r = width/2;
-thick=3;
+thick=4;
 hole_r = 13/2;
 post_r = 16.3/2;
 lip_r = 16.9/2-.5;
 lip_h = 1.7;
+hinge_r = thick*1;
 hinge_count = 7;
 hinge_width = width/hinge_count;
 hinge_down = .2;
-teeth_size = .15;
-teeth_w = .4;
+teeth_size = .2;
+teeth_w = .6;
+pin_r = hinge_r * .4;
 
 difference() {
     union() {
@@ -56,7 +58,7 @@ difference() {
         for(i=[0:ceil(hinge_count/2)])
         translate([i*(2*hinge_width)-.25,(length-end_r*2)/2,-hinge_down], $fn=20)
         rotate([0,90,0])
-        cylinder(hinge_width+.5, thick+.3, thick+.3);
+        cylinder(hinge_width+.5, hinge_r+.3, hinge_r+.3);
         translate([0,(length-end_r*2)/2,-5]) cube([width,10,10]);
     }
         
@@ -66,48 +68,52 @@ difference() {
             for(i=[0:floor(hinge_count/2)])
             translate([i*(2*hinge_width)+hinge_width-.25,(length-end_r*2)/2,-hinge_down], $fn=20)
             rotate([0,90,0])
-            cylinder(hinge_width+.5, thick+.3, thick+.3);
+            cylinder(hinge_width+.5, hinge_r+.3, hinge_r+.3);
             translate([0,(length-end_r*2)/2,0], $fn=20)
             rotate([0,90,0])
-            cylinder(width, thick/2+.2, thick/2+.2);
+            cylinder(width, pin_r+.2, pin_r+.2);
         }
         translate([0,(length-end_r*2)/2-10,-5]) cube([width,10,10]);
     }
 
-    translate([6,length/2+4,0]) mirror([0,1,0]) linear_extrude(.5) text("WALL", 4);
-    translate([-7.3+width,14,0]) rotate([0,0,180]) mirror([0,1,0]) linear_extrude(.5) text("CAM", 4);
-        
+    translate([6,length/2+4,0]) mirror([0,1,0]) linear_extrude(1) text("WALL", 4);
+    translate([-7.3+width,14,0]) rotate([0,0,180]) mirror([0,1,0]) linear_extrude(1) text("CAM", 4);
+    
 }
 
+teeth_xo = hinge_r*2/3-.2;
+teeth_l = hinge_r/3;
+teeth_split_offset = 1;
 difference() {
     // hinge
     for(i=[0:hinge_count-1])
     translate([i*hinge_width+.15,(length-end_r*2)/2,-hinge_down], $fn=20)
     rotate([0,90,0])
     union() {
-        cylinder(hinge_width-.3, thick, thick);
+        cylinder(hinge_width-.3, hinge_r, hinge_r, $fn=40);
         for(i=[0:20:360]) {
             
             // -x side
-            rotate([0,0,i-2]) translate([2.2,-teeth_w/4,-teeth_size]) cube([.7,teeth_w/2,teeth_size]);
-            rotate([0,0,i+2]) translate([2.2,-teeth_w/4,-teeth_size]) cube([.7,teeth_w/2,teeth_size]);
+            rotate([0,0,i-teeth_split_offset]) translate([teeth_xo,-teeth_w/4,-teeth_size]) cube([teeth_l,teeth_w/2,teeth_size]);
+            rotate([0,0,i+teeth_split_offset]) translate([teeth_xo,-teeth_w/4,-teeth_size]) cube([teeth_l,teeth_w/2,teeth_size]);
             
             // +x side
-            rotate([0,0,i+8]) translate([2.2,-teeth_w/4,hinge_width-.3]) cube([.7,teeth_w/2,teeth_size]);
-            rotate([0,0,i+12]) translate([2.2,-teeth_w/4,hinge_width-.3]) cube([.7,teeth_w/2,teeth_size]);
+            rotate([0,0,i+10-teeth_split_offset]) translate([teeth_xo,-teeth_w/4,hinge_width-.3]) cube([teeth_l,teeth_w/2,teeth_size]);
+            rotate([0,0,i+10+teeth_split_offset]) translate([teeth_xo,-teeth_w/4,hinge_width-.3]) cube([teeth_l,teeth_w/2,teeth_size]);
         }
     }
 
     // hinge pin gap
     translate([0,(length-end_r*2)/2,-hinge_down], $fn=20)
     rotate([0,90,0])
-    cylinder(width+2, thick/2+.2, thick/2+.2);
+    cylinder(width+2, pin_r+.2, pin_r+.2);
+
 }
 
 
 // hinge pin
-translate([0,(length-end_r*2)/2,-hinge_down], $fn=20)
-rotate([0,90,0])
-cylinder(width, thick/2-.03, thick/2-.03);
+//translate([0,(length-end_r*2)/2,-hinge_down], $fn=20)
+//rotate([0,90,0])
+//cylinder(width, pin_r-.05, pin_r-.05);
 
 
