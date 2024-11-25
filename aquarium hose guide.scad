@@ -1,6 +1,6 @@
 include <nutsnbolts/cyl_head_bolt.scad>
 
-hose_od = 15;
+hose_od = 11;
 gap_w = 49;
 T=3;
 
